@@ -1,5 +1,5 @@
 export interface FormatOptions {
-  indentStyle: 'tab' | 'space';
+  indentStyle?: 'tab' | 'space';
   indentSize?: number;
   eol?: string;
   useWhitespaceInAutoClosingNode?: boolean;

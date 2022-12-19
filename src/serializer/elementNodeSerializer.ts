@@ -94,7 +94,7 @@ export function serializeElementNode(node: Node, context: SerializerContext): Ar
 
       buffer.push('</', prefixedNodeName, '>');
     } else {
-      if (context.formatOptions?.autoClosingUseWhitespace) {
+      if (context.formatOptions?.useWhitespaceInAutoClosingNode) {
         buffer.push(' ');
       }
       buffer.push('/>');

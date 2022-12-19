@@ -1,11 +1,13 @@
+import { FormatOptions } from './models';
 import * as serializer from './serializer';
 
-export function formatXml(node: Node) {
+export function formatXml(node: Node, formatOptions?: FormatOptions) {
   const context: serializer.SerializerContext = {
     isHtml: false,
     visibleNamespaces: [],
     serializeNode,
-    level: -1
+    level: -1,
+    formatOptions
   };
 
   if (serializer.isDocumentNode(node) && node.documentElement && !node.documentElement.prefix) {
