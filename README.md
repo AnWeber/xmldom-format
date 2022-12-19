@@ -24,7 +24,7 @@ use `XMLSerializer.serializeToString(rootNode)` to serialize Document without Fo
 
 ### formatXml
 
-use `formatXml` to serialize and format Document with [FormatOptions](./src/serializer/formatOptions.ts)
+use `formatXml` to serialize and format Document with [FormatOptions](./src/models/formatOptions.ts)
 
 ```js
   import { formatXml } from "xmldom-format";

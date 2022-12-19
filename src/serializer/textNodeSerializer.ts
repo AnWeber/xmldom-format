@@ -1,4 +1,4 @@
-import { NodeType } from './nodeType';
+import { NodeType } from '../models';
 import { xmlEncoder } from './xmlEncoder';
 
 /**
@@ -18,15 +18,12 @@ import { xmlEncoder } from './xmlEncoder';
  * @see https://w3c.github.io/DOM-Parsing/#xml-serializing-a-text-node
  */
 export function serializeTextNode(node: Node): Array<string> | undefined {
-	if (isTextNode(node)) {
-		return [ node.data
-			.replace(/[<&>]/gu, xmlEncoder)
-		];
-	}
-	return undefined;
+  if (isTextNode(node)) {
+    return [node.data.replace(/[<&>]/gu, xmlEncoder)];
+  }
+  return undefined;
 }
 
-
-function isTextNode(node: Node): node is CharacterData{
-	return node.nodeType === NodeType.TEXT_NODE || typeof (node as {data?: unknown}).data === "string";
+function isTextNode(node: Node): node is CharacterData {
+  return node.nodeType === NodeType.TEXT_NODE || typeof (node as { data?: unknown }).data === 'string';
 }

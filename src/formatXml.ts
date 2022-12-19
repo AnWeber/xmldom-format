@@ -5,6 +5,7 @@ export function formatXml(node: Node) {
     isHtml: false,
     visibleNamespaces: [],
     serializeNode,
+    level: -1
   };
 
   if (serializer.isDocumentNode(node) && node.documentElement && !node.documentElement.prefix) {
@@ -37,7 +38,7 @@ function serializeNode(node: Node, context: serializer.SerializerContext): Array
   const contextClone = {
     ...context,
     visibleNamespaces: context.visibleNamespaces.slice(),
-    level: context.level ? context.level + 1 : 0,
+    level: context.level + 1,
   };
   const buffer: Array<string> = [];
   for (const serializer of serializers) {

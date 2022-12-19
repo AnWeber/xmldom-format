@@ -6,6 +6,6 @@ export * from './documentTypeSerializer';
 export * from './elementNodeSerializer';
 export * from './entityReferenceSerializer';
 export * from './processingInstructionSerializer';
-export * from './serializerContext';
+export * from '../models/serializerContext';
 export * from './textNodeSerializer';
 export * from './unknownSerializer';

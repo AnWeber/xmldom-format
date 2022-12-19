@@ -1,12 +1,12 @@
-import { NodeType } from './nodeType';
+import { NodeType } from '../models';
 
-function isCommentNode(node: Node): node is Comment{
-	return node.nodeType === NodeType.COMMENT_NODE;
+function isCommentNode(node: Node): node is Comment {
+  return node.nodeType === NodeType.COMMENT_NODE;
 }
 
-export function serializeCommentNode(node: Node): Array<string> | undefined  {
-	if (isCommentNode(node)) {
-		return ["<!--", node.data, "-->"];
-	}
-	return undefined;
+export function serializeCommentNode(node: Node): Array<string> | undefined {
+  if (isCommentNode(node)) {
+    return ['<!--', node.data, '-->'];
+  }
+  return undefined;
 }

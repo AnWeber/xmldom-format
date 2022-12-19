@@ -1,7 +1,5 @@
+import { NodeType, Namespace, SerializerContext } from '../models';
 import { addSerializedAttribute } from './attributeNodeSerializer';
-import { isCDataSectionNode } from './cdataSectionSerializer';
-import { NodeType } from './nodeType';
-import { Namespace, SerializerContext } from './serializerContext';
 
 export function serializeElementNode(node: Node, context: SerializerContext): Array<string> | undefined {
   if (isElementNode(node)) {

@@ -23,7 +23,9 @@ describe('xmlSerializer', () => {
   it('supports <script> element with no children', () => {
     const doc = domParser.parseFromString('<html2><script></script></html2>', 'text/html');
     if (doc.documentElement.firstChild) {
-      expect(xmlSerializer.serializeToString(doc.documentElement.firstChild)).toBe('<script xmlns="http://www.w3.org/1999/xhtml"></script>');
+      expect(xmlSerializer.serializeToString(doc.documentElement.firstChild)).toBe(
+        '<script xmlns="http://www.w3.org/1999/xhtml"></script>'
+      );
     }
   });
 
@@ -32,7 +34,6 @@ describe('xmlSerializer', () => {
     it('that are used in a node', () => {
       const source = '<w:p><w:r>test1</w:r><w:r>test2</w:r></w:p>';
       const { documentElement } = domParser.parseFromString(source);
-
 
       expect(xmlSerializer.serializeToString(documentElement)).toStrictEqual(source);
     });
@@ -53,9 +54,7 @@ describe('xmlSerializer', () => {
       const child = doc.createElementNS('AAA', 'child');
       expect(xmlSerializer.serializeToString(child)).toBe('<child xmlns="AAA"/>');
       doc.documentElement.appendChild(child);
-      expect(xmlSerializer.serializeToString(doc)).toBe(
-        '<a:foo xmlns:a="AAA"><bar xmlns="AAA"/><a:child/></a:foo>'
-      );
+      expect(xmlSerializer.serializeToString(doc)).toBe('<a:foo xmlns:a="AAA"><bar xmlns="AAA"/><a:child/></a:foo>');
     });
     it('should add local namespace from parent', () => {
       const str = '<a:foo xmlns:a="AAA"/>';
@@ -68,9 +67,7 @@ describe('xmlSerializer', () => {
       const nested = doc.createElementNS('AAA', 'nested');
       expect(xmlSerializer.serializeToString(nested)).toBe('<nested xmlns="AAA"/>');
       child.appendChild(nested);
-      expect(xmlSerializer.serializeToString(doc)).toBe(
-        '<a:foo xmlns:a="AAA"><a:child><a:nested/></a:child></a:foo>'
-      );
+      expect(xmlSerializer.serializeToString(doc)).toBe('<a:foo xmlns:a="AAA"><a:child><a:nested/></a:child></a:foo>');
     });
     it('should add local namespace as xmlns in HTML', () => {
       const str = '<a:foo xmlns:a="AAA"/>';
@@ -79,15 +76,11 @@ describe('xmlSerializer', () => {
       const child = doc.createElementNS('AAA', 'child');
       expect(xmlSerializer.serializeToString(child)).toBe('<child xmlns="AAA"/>');
       doc.documentElement.appendChild(child);
-      expect(xmlSerializer.serializeToString(doc)).toBe(
-        '<a:foo xmlns:a="AAA"><a:child/></a:foo>'
-      );
+      expect(xmlSerializer.serializeToString(doc)).toBe('<a:foo xmlns:a="AAA"><a:child/></a:foo>');
       const nested = doc.createElementNS('AAA', 'nested');
       expect(xmlSerializer.serializeToString(nested)).toBe('<nested xmlns="AAA"/>');
       child.appendChild(nested);
-      expect(xmlSerializer.serializeToString(doc)).toBe(
-        '<a:foo xmlns:a="AAA"><a:child><a:nested/></a:child></a:foo>'
-      );
+      expect(xmlSerializer.serializeToString(doc)).toBe('<a:foo xmlns:a="AAA"><a:child><a:nested/></a:child></a:foo>');
     });
     it('should add keep different default namespace of child', () => {
       const str = '<a:foo xmlns:a="AAA"/>';
