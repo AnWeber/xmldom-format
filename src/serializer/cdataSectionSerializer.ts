@@ -7,5 +7,5 @@ export function serializeCDataSectionNode(node: Node): Array<string> | undefined
   if (isCDataSectionNode(node)) {
     return ['<![CDATA[', node.data, ']]>'];
   }
-  return [];
+  return undefined;
 }

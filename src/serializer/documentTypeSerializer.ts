@@ -1,8 +1,10 @@
-import { NodeType } from '../models';
+import { NodeType, SerializerContext } from '../models';
+import { addIndentation } from '../utils';
 
-export function serializeDocumentType(node: Node): Array<string> | undefined {
+export function serializeDocumentType(node: Node, context: SerializerContext): Array<string> | undefined {
   if (isDocumentType(node)) {
     const buffer: Array<string> = [];
+    addIndentation(buffer, context);
     buffer.push('<!DOCTYPE ', node.name);
     if (node.publicId) {
       buffer.push(' PUBLIC ', node.publicId);

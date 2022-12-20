@@ -1,10 +1,25 @@
 import { formatXml } from './formatXml';
+import { FormatOptions } from './models';
 import { DOMParser } from '@xmldom/xmldom';
+import { EOL } from 'os';
 
 describe('formatXml', () => {
   const domParser = new DOMParser();
 
-  const addHtmlBody = (content: string) => `<html><head>test</head><body>${content}</body></html>`;
+  const addHtmlBody = (content: string, pretty?: boolean) => {
+    if (pretty) {
+      return `
+<html>
+  <head>
+    <title>test</title>
+  </head>
+  <body>
+    ${content}
+  </body>
+</html>`.trim();
+    }
+    return `<html><head><title>test</title></head><body>${content}</body></html>`;
+  };
 
   describe('empty formatOptions', () => {
     const xmlTests = [
@@ -13,12 +28,15 @@ describe('formatXml', () => {
       '<html xmlns="http://www.w3.org/1999/xhtml"><head><script><![CDATA[escape that <]]></script></head></html>',
     ];
     for (const xml of xmlTests) {
-      it(`format $[xml}`, async () => {
+      it(`format ${xml}`, async () => {
         const document = domParser.parseFromString(xml);
         const result = formatXml(document);
         expect(result).toBe(xml);
       });
     }
+    it(`format unknown Node`, () => {
+      expect(formatXml({} as Node)).toBe("");
+    })
   });
   describe('useWhitespaceInAutoClosingNode', () => {
     const xmlTests = [
@@ -29,10 +47,88 @@ describe('formatXml', () => {
       },
     ];
     for (const test of xmlTests) {
-      it(`useWhitespaceInAutoClosingNode with xml $[xml}`, async () => {
+      it(`use WhitespaceInAutoClosingNode with xml ${test.xml}`, async () => {
         const document = domParser.parseFromString(test.xml);
         const formatOptions = { useWhitespaceInAutoClosingNode: true };
         expect(formatXml(document)).toBe(test.xml);
+        expect(formatXml(document, formatOptions)).toBe(test.expected);
+      });
+    }
+  });
+  describe('use indentation', () => {
+    const xmlTests = [
+      {
+        xml: `<head>test<br/>test</head>`,
+        expected: `<head>test<br />test</head>`,
+      },
+      {
+        xml: addHtmlBody('<h1 style="color: red">Hello World</h1><p>Lorem Ipsum<br/>Lorem ipsum</p>'),
+        expected: addHtmlBody(
+          `
+    <h1 style="color: red">Hello World</h1>
+    <p>Lorem Ipsum<br />Lorem ipsum</p>`.trim(),
+          true
+        ),
+      },
+      {
+        xml: addHtmlBody('<!-- Test -->'),
+        expected: addHtmlBody(`<!-- Test -->`, true),
+      },
+      {
+        xml: addHtmlBody('<div><![CDATA[ test ]]></div>'),
+        expected: addHtmlBody(`<div><![CDATA[ test ]]></div>`, true),
+      },
+      {
+        xml: `<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE note SYSTEM "Note.dtd">
+        <?xml-stylesheet href="Namen.css" type="text/css"?>
+        <note>
+        <to>Tove</to>
+        <from>Jani</from>
+        <heading>Reminder</heading>
+        <body>Don't forget me this weekend!</body>
+        </note>`,
+        expected: `
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE note SYSTEM "Note.dtd">
+<?xml-stylesheet href="Namen.css" type="text/css"?>
+<note>
+  <to>Tove</to>
+  <from>Jani</from>
+  <heading>Reminder</heading>
+  <body>Don't forget me this weekend!</body>
+</note>`.trim(),
+      },
+      {
+        xml: `<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE BOOK PUBLIC "-//Davenport//DTD DocBook V3.0//EN" SYSTEM>
+        <?xml-stylesheet href="Namen.css" type="text/css"?>
+        <note>
+        <to>Tove</to>
+        <from>Jani</from>
+        <heading>Reminder</heading>
+        <body>Don't forget me this weekend!</body>
+        </note>`,
+        expected: `
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE BOOK PUBLIC "-//Davenport//DTD DocBook V3.0//EN" SYSTEM>
+<?xml-stylesheet href="Namen.css" type="text/css"?>
+<note>
+  <to>Tove</to>
+  <from>Jani</from>
+  <heading>Reminder</heading>
+  <body>Don't forget me this weekend!</body>
+</note>`.trim(),
+      },
+    ];
+    for (const test of xmlTests) {
+      it(`indentation with xml ${test.xml}`, async () => {
+        const document = domParser.parseFromString(test.xml);
+        const formatOptions: FormatOptions = {
+          indentation: '  ',
+          eol: EOL,
+          useWhitespaceInAutoClosingNode: true,
+        };
         expect(formatXml(document, formatOptions)).toBe(test.expected);
       });
     }

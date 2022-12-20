@@ -1,12 +1,16 @@
-import { NodeType } from '../models';
+import { NodeType, SerializerContext } from '../models';
+import { addIndentation } from '../utils';
 
 function isProcessingInstructionNode(node: Node): node is ProcessingInstruction {
   return node.nodeType === NodeType.PROCESSING_INSTRUCTION_NODE;
 }
 
-export function serializeProcessingInstructionNode(node: Node): Array<string> | undefined {
+export function serializeProcessingInstructionNode(node: Node, context: SerializerContext): Array<string> | undefined {
   if (isProcessingInstructionNode(node)) {
-    return ['<?', node.target, ' ', node.data, '?>'];
+		const buffer: Array<string> = [];
+		addIndentation(buffer, context);
+		buffer.push('<?', node.target, ' ', node.data, '?>');
+		return buffer;
   }
   return undefined;
 }

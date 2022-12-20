@@ -1,5 +1,6 @@
 import { XMLSerializer } from './xmlSerializer';
 import { DOMParser } from '@xmldom/xmldom';
+import { EOL } from 'os';
 
 describe('xmlSerializer', () => {
   const domParser = new DOMParser();
@@ -101,7 +102,7 @@ describe('xmlSerializer', () => {
   describe('is insensitive to namespace order', () => {
     it('should preserve prefixes for inner elements and attributes', () => {
       const NS = 'http://www.w3.org/test';
-      const xml = `
+      const xml = minify(`
   <xml xmlns="${NS}">
     <one attr="first"/>
     <group xmlns:inner="${NS}">
@@ -109,97 +110,39 @@ describe('xmlSerializer', () => {
       <inner:three inner:attr="second"/>
     </group>
   </xml>
-  `.trim();
+  `);
       const dom = domParser.parseFromString(xml, 'text/xml');
-      const doc = dom.documentElement;
-      const one = doc.childNodes.item(1);
-      expect(one).toMatchObject({
-        localName: 'one',
-        nodeName: 'one',
-        prefix: null,
-        namespaceURI: NS,
-      });
-      const group = doc.childNodes.item(3);
-      expect(group).toMatchObject({
-        localName: 'group',
-        nodeName: 'group',
-        prefix: null,
-        namespaceURI: NS,
-      });
-      const two = group.childNodes.item(1);
-      expect(two).toMatchObject({
-        localName: 'two',
-        nodeName: 'two',
-        prefix: null,
-        namespaceURI: NS,
-      });
-      const three = group.childNodes.item(3);
-      expect(three).toMatchObject({
-        localName: 'three',
-        nodeName: 'inner:three',
-        prefix: 'inner',
-        namespaceURI: NS,
-      });
       expect(xmlSerializer.serializeToString(dom)).toEqual(xml);
     });
     it('should preserve missing prefixes for inner prefixed elements and attributes', () => {
       const NS = 'http://www.w3.org/test';
-      const xml = `
-  <xml xmlns:inner="${NS}">
+      const xml = minify(`
+      <xml xmlns:inner="${NS}">
     <inner:one attr="first"/>
     <inner:group xmlns="${NS}">
       <inner:two attr="second"/>
       <three attr="second"/>
     </inner:group>
   </xml>
-  `.trim();
+  `);
       const dom = domParser.parseFromString(xml, 'text/xml');
-      const doc = dom.documentElement;
-      const one = doc.childNodes.item(1);
-      expect(one).toMatchObject({
-        localName: 'one',
-        nodeName: 'inner:one',
-        prefix: 'inner',
-        namespaceURI: NS,
-      });
-      const group = doc.childNodes.item(3);
-      expect(group).toMatchObject({
-        localName: 'group',
-        nodeName: 'inner:group',
-        prefix: 'inner',
-        namespaceURI: NS,
-      });
-      const two = group.childNodes.item(1);
-      expect(two).toMatchObject({
-        localName: 'two',
-        nodeName: 'inner:two',
-        prefix: 'inner',
-        namespaceURI: NS,
-      });
-      const three = group.childNodes.item(3);
-      expect(three).toMatchObject({
-        localName: 'three',
-        nodeName: 'three',
-        prefix: null,
-        namespaceURI: NS,
-      });
       expect(xmlSerializer.serializeToString(dom)).toEqual(xml);
     });
     it('should produce unprefixed svg elements when prefixed namespace comes first', () => {
-      const svg = `
+      const svg = minify(`
   <svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg">
     <g><circle/></g>
-  </svg>`.trim();
+  </svg>`);
       const dom = domParser.parseFromString(svg, 'text/xml');
 
       expect(xmlSerializer.serializeToString(dom)).toEqual(svg);
     });
     it('should produce unprefixed svg elements when default namespace comes first', () => {
-      const svg = `
+      const svg = minify(`
   <svg xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
     <g><circle/></g>
   </svg>
-  `.trim();
+  `);
       const dom = domParser.parseFromString(svg, 'text/xml');
 
       expect(xmlSerializer.serializeToString(dom)).toEqual(svg);
@@ -232,3 +175,10 @@ describe('xmlSerializer', () => {
     });
   });
 });
+
+function minify(value: string): string {
+  return value
+    .split(EOL)
+    .map(val => val.trim())
+    .join('');
+}

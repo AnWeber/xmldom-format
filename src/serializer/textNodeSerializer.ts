@@ -19,11 +19,11 @@ import { xmlEncoder } from './xmlEncoder';
  */
 export function serializeTextNode(node: Node): Array<string> | undefined {
   if (isTextNode(node)) {
-    return [node.data.replace(/[<&>]/gu, xmlEncoder)];
+    return [node.data.trim().replace(/[<&>]/gu, xmlEncoder)];
   }
   return undefined;
 }
 
-function isTextNode(node: Node): node is CharacterData {
-  return node.nodeType === NodeType.TEXT_NODE || typeof (node as { data?: unknown }).data === 'string';
+export function isTextNode(node: Node): node is CharacterData {
+  return node.nodeType === NodeType.TEXT_NODE;
 }

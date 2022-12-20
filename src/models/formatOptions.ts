@@ -1,6 +1,6 @@
 export interface FormatOptions {
-  indentStyle?: 'tab' | 'space';
-  indentSize?: number;
+  indentation?: string;
   eol?: string;
   useWhitespaceInAutoClosingNode?: boolean;
+  inlineElements?: Array<string>;
 }

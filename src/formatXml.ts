@@ -1,13 +1,13 @@
-import { FormatOptions } from './models';
+import { FormatOptions, SerializerContext, SerializerFunction } from './models';
 import * as serializer from './serializer';
 
 export function formatXml(node: Node, formatOptions?: FormatOptions) {
-  const context: serializer.SerializerContext = {
+  const context: SerializerContext = {
     isHtml: false,
     visibleNamespaces: [],
     serializeNode,
-    level: -1,
-    formatOptions
+    level: 0,
+    formatOptions,
   };
 
   if (serializer.isDocumentNode(node) && node.documentElement && !node.documentElement.prefix) {
@@ -20,10 +20,10 @@ export function formatXml(node: Node, formatOptions?: FormatOptions) {
     }
   }
   const buffer = serializeNode(node, context);
-  return buffer.join('');
+  return buffer.join('').trim();
 }
 
-const serializers: Array<serializer.SerializerFunction> = [
+const serializers: Array<SerializerFunction> = [
   serializer.serializeElementNode,
   serializer.serializeDocumentNode,
   serializer.serializeAttributeNode,
@@ -36,11 +36,10 @@ const serializers: Array<serializer.SerializerFunction> = [
   serializer.serializeUnknownNode,
 ];
 
-function serializeNode(node: Node, context: serializer.SerializerContext): Array<string> {
+function serializeNode(node: Node, context: SerializerContext): Array<string> {
   const contextClone = {
     ...context,
     visibleNamespaces: context.visibleNamespaces.slice(),
-    level: context.level + 1,
   };
   const buffer: Array<string> = [];
   for (const serializer of serializers) {

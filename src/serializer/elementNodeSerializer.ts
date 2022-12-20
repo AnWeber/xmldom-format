@@ -1,5 +1,8 @@
 import { NodeType, Namespace, SerializerContext } from '../models';
 import { addSerializedAttribute } from './attributeNodeSerializer';
+import { isCDataSectionNode } from './cdataSectionSerializer';
+import { addIndentation, addWhitespaceInAutoClosingNode, isCharacterData, isInlineElement } from '../utils';
+import { isTextNode } from './textNodeSerializer';
 
 export function serializeElementNode(node: Node, context: SerializerContext): Array<string> | undefined {
   if (isElementNode(node)) {
@@ -44,6 +47,9 @@ export function serializeElementNode(node: Node, context: SerializerContext): Ar
       }
     }
 
+    if (!isInlineElement(node, context)) {
+      addIndentation(buffer, context);
+    }
     buffer.push('<', prefixedNodeName);
 
     for (let i = 0; i < len; i++) {
@@ -82,21 +88,26 @@ export function serializeElementNode(node: Node, context: SerializerContext): Ar
 
       let child = node.firstChild;
       // if is cdata child node
+      let onlyInlineElements = true;
       const isScriptNode = context.isHtml && /^script$/iu.test(nodeName);
       while (child) {
         if (isScriptNode && isCharacterData(child) && child.data) {
           buffer.push(child.data);
         } else {
-          buffer.push(...context.serializeNode(child, context));
+          if (!isTextNode(child) && !isCDataSectionNode(child) && !isInlineElement(child, context)) {
+            onlyInlineElements = false;
+          }
+          buffer.push(...context.serializeNode(child, { ...context, level: context.level + 1 }));
         }
         child = child.nextSibling;
       }
 
+      if (!onlyInlineElements) {
+        addIndentation(buffer, context);
+      }
       buffer.push('</', prefixedNodeName, '>');
     } else {
-      if (context.formatOptions?.useWhitespaceInAutoClosingNode) {
-        buffer.push(' ');
-      }
+      addWhitespaceInAutoClosingNode(buffer, context);
       buffer.push('/>');
     }
     return buffer;
@@ -134,7 +145,4 @@ function needNamespaceDefine(node: Attr | Element, visibleNamespaces: Array<Name
 
 function isElementNode(node: Node): node is Element {
   return node.nodeType === NodeType.ELEMENT_NODE;
-}
-function isCharacterData(node: Node): node is CharacterData {
-  return !!(node as CharacterData).data;
 }
