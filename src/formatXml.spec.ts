@@ -35,7 +35,7 @@ describe('formatXml', () => {
       });
     }
     it(`format unknown Node`, () => {
-      expect(formatXml({} as Node)).toBe("");
+      expect(formatXml({ nodeType: -2, nodeName: "foo"} as Node)).toBe("??foo");
     })
   });
   describe('useWhitespaceInAutoClosingNode', () => {

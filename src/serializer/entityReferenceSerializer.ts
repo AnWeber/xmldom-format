@@ -4,5 +4,5 @@ export function serializeEntityReferenceNode(node: Node): Array<string> | undefi
   if (node.nodeType === NodeType.ENTITY_REFERENCE_NODE) {
     return ['&', node.nodeName, ';'];
   }
-  return [];
+  return undefined;
 }

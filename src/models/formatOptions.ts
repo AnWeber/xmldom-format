@@ -1,6 +1,6 @@
 export interface FormatOptions {
-  indentation?: string;
   eol?: string;
-  useWhitespaceInAutoClosingNode?: boolean;
+  indentation?: string;
   inlineElements?: Array<string>;
+  useWhitespaceInAutoClosingNode?: boolean;
 }
