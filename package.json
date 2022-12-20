@@ -1,6 +1,6 @@
 {
   "name": "xmldom-format",
-  "version": "1.0.o",
+  "version": "1.0.0",
   "description": "format xml using @xmldom/xmldom",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
