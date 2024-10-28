@@ -1,8 +1,9 @@
 import { NodeType, Namespace, SerializerContext } from '../models';
 import { addSerializedAttribute } from './attributeNodeSerializer';
 import { isCDataSectionNode } from './cdataSectionSerializer';
-import { addIndentation, addWhitespaceInAutoClosingNode, isCharacterData, isInlineElement } from '../utils';
+import { addIndentation, addWhitespaceInAutoClosingNode, isInlineElement } from '../utils';
 import { isTextNode } from './textNodeSerializer';
+import { Node, Attr, Element } from '@xmldom/xmldom';
 
 export function serializeElementNode(node: Node, context: SerializerContext): Array<string> | undefined {
   if (isElementNode(node)) {
@@ -89,16 +90,12 @@ export function serializeElementNode(node: Node, context: SerializerContext): Ar
       let child = node.firstChild;
       // if is cdata child node
       let onlyInlineElements = true;
-      const isScriptNode = context.isHtml && /^script$/iu.test(nodeName);
       while (child) {
-        if (isScriptNode && isCharacterData(child) && child.data) {
-          buffer.push(child.data);
-        } else {
-          if (!isTextNode(child) && !isCDataSectionNode(child) && !isInlineElement(child, context)) {
-            onlyInlineElements = false;
-          }
-          buffer.push(...context.serializeNode(child, { ...context, level: context.level + 1 }));
+        if (!isTextNode(child) && !isCDataSectionNode(child) && !isInlineElement(child, context)) {
+          onlyInlineElements = false;
         }
+        buffer.push(...context.serializeNode(child, { ...context, level: context.level + 1 }));
+
         child = child.nextSibling;
       }
 

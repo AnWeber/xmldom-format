@@ -1,4 +1,5 @@
 import { NodeType, SerializerContext } from '../models';
+import { Node, Document, DocumentFragment } from '@xmldom/xmldom';
 
 export function isDocumentNode(node: Node): node is Document {
   return node.nodeType === NodeType.DOCUMENT_NODE;

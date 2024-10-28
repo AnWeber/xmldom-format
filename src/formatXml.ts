@@ -1,6 +1,6 @@
 import { FormatOptions, SerializerContext, SerializerFunction } from './models';
 import * as serializer from './serializer';
-
+import { Node } from '@xmldom/xmldom';
 export function formatXml(node: Node, formatOptions?: FormatOptions) {
   const context: SerializerContext = {
     isHtml: false,

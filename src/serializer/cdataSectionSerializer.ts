@@ -1,4 +1,5 @@
 import { NodeType } from '../models';
+import { Node, Text } from '@xmldom/xmldom';
 
 export function isCDataSectionNode(node: Node): node is Text {
   return node.nodeType === NodeType.CDATA_SECTION_NODE;

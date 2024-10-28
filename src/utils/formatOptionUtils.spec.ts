@@ -2,7 +2,7 @@ import { addWhitespaceInAutoClosingNode, addIndentation } from './formatOptionUt
 
 describe('formatOptionUtils', () => {
   describe('addIndentation', () => {
-    it("should add 2 indentation on level 2", () => {
+    it('should add 2 indentation on level 2', () => {
       const buffer: Array<string> = [];
       addIndentation(buffer, {
         isHtml: false,
@@ -10,12 +10,12 @@ describe('formatOptionUtils', () => {
         visibleNamespaces: [],
         serializeNode: () => [],
         formatOptions: {
-          indentation: "  ",
-        }
-      })
-      expect(buffer).toEqual(["\r\n", "  ", "  "]);
+          indentation: '  ',
+        },
+      });
+      expect(buffer).toEqual(['\r\n', '  ', '  ']);
     });
-    it("should add no indentation on level 0", () => {
+    it('should add no indentation on level 0', () => {
       const buffer: Array<string> = [];
       addIndentation(buffer, {
         isHtml: false,
@@ -23,12 +23,12 @@ describe('formatOptionUtils', () => {
         visibleNamespaces: [],
         serializeNode: () => [],
         formatOptions: {
-          indentation: "  ",
-        }
-      })
-      expect(buffer).toEqual(["\r\n"]);
+          indentation: '  ',
+        },
+      });
+      expect(buffer).toEqual(['\r\n']);
     });
-    it("should add eol with foo", () => {
+    it('should add eol with foo', () => {
       const buffer: Array<string> = [];
       addIndentation(buffer, {
         isHtml: false,
@@ -36,13 +36,13 @@ describe('formatOptionUtils', () => {
         visibleNamespaces: [],
         serializeNode: () => [],
         formatOptions: {
-          indentation: "  ",
-          eol: "foo"
-        }
-      })
-      expect(buffer).toEqual(["foo","  "]);
+          indentation: '  ',
+          eol: 'foo',
+        },
+      });
+      expect(buffer).toEqual(['foo', '  ']);
     });
-    it("should add eol with \\r\\n", () => {
+    it('should add eol with \\r\\n', () => {
       const buffer: Array<string> = [];
       addIndentation(buffer, {
         isHtml: false,
@@ -50,14 +50,14 @@ describe('formatOptionUtils', () => {
         visibleNamespaces: [],
         serializeNode: () => [],
         formatOptions: {
-          indentation: "  "
-        }
-      })
-      expect(buffer).toEqual(["\r\n","  "]);
+          indentation: '  ',
+        },
+      });
+      expect(buffer).toEqual(['\r\n', '  ']);
     });
   });
   describe('addWhitespaceInAutoClosingNode', () => {
-    it("should add whitespace", () => {
+    it('should add whitespace', () => {
       const buffer: Array<string> = [];
       addWhitespaceInAutoClosingNode(buffer, {
         isHtml: false,
@@ -65,12 +65,12 @@ describe('formatOptionUtils', () => {
         visibleNamespaces: [],
         serializeNode: () => [],
         formatOptions: {
-          useWhitespaceInAutoClosingNode: true
-        }
-      })
-      expect(buffer).toEqual([" "]);
+          useWhitespaceInAutoClosingNode: true,
+        },
+      });
+      expect(buffer).toEqual([' ']);
     });
-    it("should not add whitespace", () => {
+    it('should not add whitespace', () => {
       const buffer: Array<string> = [];
       addWhitespaceInAutoClosingNode(buffer, {
         isHtml: false,
@@ -78,9 +78,9 @@ describe('formatOptionUtils', () => {
         visibleNamespaces: [],
         serializeNode: () => [],
         formatOptions: {
-          useWhitespaceInAutoClosingNode: false
-        }
-      })
+          useWhitespaceInAutoClosingNode: false,
+        },
+      });
       expect(buffer).toEqual([]);
     });
   });

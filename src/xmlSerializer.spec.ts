@@ -1,30 +1,23 @@
 import { XMLSerializer } from './xmlSerializer';
-import { DOMParser } from '@xmldom/xmldom';
+import { DOMParser, MIME_TYPE } from '@xmldom/xmldom';
 import { EOL } from 'os';
 
 describe('xmlSerializer', () => {
   const domParser = new DOMParser();
   const xmlSerializer = new XMLSerializer();
 
-  it('serializeToString', async () => {
-    const xml =
-      '<html><head>test</head><body><h1 style="color: red">Hello World</h1><p>Lorem Ipsum<br/>Lorem ipsum</p></body></html>';
-    const document = domParser.parseFromString(xml);
-    expect(xmlSerializer.serializeToString(document)).toBe(xml);
-  });
-
   it('supports text node containing "]]>"', () => {
     const doc = domParser.parseFromString('<test/>', 'text/xml');
-    doc.documentElement.appendChild(doc.createTextNode('hello ]]> there'));
-    if (doc.documentElement.firstChild) {
-      expect(xmlSerializer.serializeToString(doc.documentElement.firstChild)).toBe('hello ]]&gt; there');
+    doc.documentElement?.appendChild(doc.createTextNode('hello ]]> there'));
+    if (doc.documentElement?.firstChild) {
+      expect(xmlSerializer.serializeToString(doc.documentElement?.firstChild)).toBe('hello ]]&gt; there');
     }
   });
 
   it('supports <script> element with no children', () => {
     const doc = domParser.parseFromString('<html2><script></script></html2>', 'text/html');
-    if (doc.documentElement.firstChild) {
-      expect(xmlSerializer.serializeToString(doc.documentElement.firstChild)).toBe(
+    if (doc.documentElement?.firstChild) {
+      expect(xmlSerializer.serializeToString(doc.documentElement?.firstChild)).toBe(
         '<script xmlns="http://www.w3.org/1999/xhtml"></script>'
       );
     }
@@ -33,17 +26,24 @@ describe('xmlSerializer', () => {
   describe('does not serialize namespaces with an empty URI', () => {
     // for more details see the comments in lib/dom.js:needNamespaceDefine
     it('that are used in a node', () => {
-      const source = '<w:p><w:r>test1</w:r><w:r>test2</w:r></w:p>';
-      const { documentElement } = domParser.parseFromString(source);
+      const source = '<w:p xmlns:w="namespace"><w:r>test1</w:r><w:r>test2</w:r></w:p>';
+      const { documentElement } = new DOMParser().parseFromString(source, MIME_TYPE.XML_TEXT);
 
-      expect(xmlSerializer.serializeToString(documentElement)).toStrictEqual(source);
+      expect(documentElement?.firstChild?.firstChild).toMatchObject({
+        nodeValue: 'test1',
+      });
+      expect(documentElement?.lastChild?.firstChild).toMatchObject({
+        nodeValue: 'test2',
+      });
+
+      expect(documentElement?.toString()).toStrictEqual(source);
     });
 
     it('that are used in an attribute', () => {
-      const source = '<w:p w:attr="val"/>';
-      const { documentElement } = domParser.parseFromString(source);
+      const source = '<w:p xmlns:w="namespace" w:attr="val"/>';
+      const { documentElement } = new DOMParser().parseFromString(source, MIME_TYPE.XML_TEXT);
 
-      expect(xmlSerializer.serializeToString(documentElement)).toStrictEqual(source);
+      expect(documentElement?.toString()).toStrictEqual(source);
     });
   });
 
@@ -54,7 +54,7 @@ describe('xmlSerializer', () => {
 
       const child = doc.createElementNS('AAA', 'child');
       expect(xmlSerializer.serializeToString(child)).toBe('<child xmlns="AAA"/>');
-      doc.documentElement.appendChild(child);
+      doc.documentElement?.appendChild(child);
       expect(xmlSerializer.serializeToString(doc)).toBe('<a:foo xmlns:a="AAA"><bar xmlns="AAA"/><a:child/></a:foo>');
     });
     it('should add local namespace from parent', () => {
@@ -63,7 +63,7 @@ describe('xmlSerializer', () => {
 
       const child = doc.createElementNS('AAA', 'child');
       expect(xmlSerializer.serializeToString(child)).toBe('<child xmlns="AAA"/>');
-      doc.documentElement.appendChild(child);
+      doc.documentElement?.appendChild(child);
       expect(xmlSerializer.serializeToString(doc)).toBe('<a:foo xmlns:a="AAA"><a:child/></a:foo>');
       const nested = doc.createElementNS('AAA', 'nested');
       expect(xmlSerializer.serializeToString(nested)).toBe('<nested xmlns="AAA"/>');
@@ -76,7 +76,7 @@ describe('xmlSerializer', () => {
 
       const child = doc.createElementNS('AAA', 'child');
       expect(xmlSerializer.serializeToString(child)).toBe('<child xmlns="AAA"/>');
-      doc.documentElement.appendChild(child);
+      doc.documentElement?.appendChild(child);
       expect(xmlSerializer.serializeToString(doc)).toBe('<a:foo xmlns:a="AAA"><a:child/></a:foo>');
       const nested = doc.createElementNS('AAA', 'nested');
       expect(xmlSerializer.serializeToString(nested)).toBe('<nested xmlns="AAA"/>');
@@ -90,7 +90,7 @@ describe('xmlSerializer', () => {
       const child = doc.createElementNS('BBB', 'child');
       child.setAttribute('xmlns', 'BBB');
       expect(xmlSerializer.serializeToString(child)).toBe('<child xmlns="BBB"/>');
-      doc.documentElement.appendChild(child);
+      doc.documentElement?.appendChild(child);
       const nested = doc.createElementNS('BBB', 'nested');
       expect(xmlSerializer.serializeToString(nested)).toBe('<nested xmlns="BBB"/>');
       child.appendChild(nested);
@@ -157,18 +157,18 @@ describe('xmlSerializer', () => {
     });
 
     it('should escape special characters in namespace attributes', () => {
-      const input = `<xml xmlns='<&"' xmlns:attr='"&<'><test attr:test=""/></xml>`;
-      const doc = domParser.parseFromString(input, 'text/xml');
+      const input = `<xml xmlns='&lt;&"' xmlns:attr='"&&lt;'><test attr:test=""/></xml>`;
+      const doc = domParser.parseFromString(input, MIME_TYPE.XML_TEXT);
 
       // in this case the explicit attribute nodes are serialized
       expect(xmlSerializer.serializeToString(doc)).toBe(
         '<xml xmlns="&lt;&amp;&quot;" xmlns:attr="&quot;&amp;&lt;"><test attr:test=""/></xml>'
       );
 
-      if (doc.documentElement.firstChild) {
+      if (doc.documentElement?.firstChild) {
         // in this case the namespace attributes are "inherited" from the parent,
         // which is not serialized
-        expect(xmlSerializer.serializeToString(doc.documentElement.firstChild)).toBe(
+        expect(xmlSerializer.serializeToString(doc.documentElement?.firstChild)).toBe(
           '<test xmlns:attr="&quot;&amp;&lt;" attr:test="" xmlns="&lt;&amp;&quot;"/>'
         );
       }

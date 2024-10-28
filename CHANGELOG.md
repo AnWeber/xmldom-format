@@ -1,3 +1,10 @@
+## 2.0.0 (2024-10-27)
+
+#### Features
+
+- update to @xmldom/xmldom@9.x
+
+
 ## 1.1.1 (2023-01-10)
 
 #### Fix

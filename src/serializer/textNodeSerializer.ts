@@ -1,5 +1,6 @@
 import { NodeType } from '../models';
 import { xmlEncoder } from './xmlEncoder';
+import { CharacterData, Node } from '@xmldom/xmldom';
 
 /**
  * The ampersand character (&) and the left angle bracket (<) must not appear in their literal form,

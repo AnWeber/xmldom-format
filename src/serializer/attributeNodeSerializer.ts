@@ -1,5 +1,6 @@
 import { NodeType } from '../models';
 import { xmlEncoder } from './xmlEncoder';
+import { Node, Attr } from '@xmldom/xmldom';
 
 export function addSerializedAttribute(qualifiedName: string, value: string): Array<string> {
   return [' ', qualifiedName, '="', value.replace(/[<>&"\t\n\r]/gu, xmlEncoder), '"'];

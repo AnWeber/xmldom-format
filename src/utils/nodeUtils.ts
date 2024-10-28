@@ -1,8 +1,5 @@
 import { SerializerContext } from '../models';
-
-export function isCharacterData(node: Node): node is CharacterData {
-  return !!(node as CharacterData).data;
-}
+import { Node } from '@xmldom/xmldom';
 
 export function isInlineElement(node: Node, context: SerializerContext) {
   const inlineElements = context.formatOptions?.inlineElements || DefaultInlineElements;

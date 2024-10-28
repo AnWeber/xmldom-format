@@ -1,6 +1,6 @@
 import { formatXml } from './formatXml';
 import { FormatOptions } from './models';
-import { DOMParser } from '@xmldom/xmldom';
+import { DOMParser, Node } from '@xmldom/xmldom';
 import { EOL } from 'os';
 
 describe('formatXml', () => {
@@ -29,14 +29,14 @@ describe('formatXml', () => {
     ];
     for (const xml of xmlTests) {
       it(`format ${xml}`, async () => {
-        const document = domParser.parseFromString(xml);
+        const document = domParser.parseFromString(xml, 'text/xml');
         const result = formatXml(document);
         expect(result).toBe(xml);
       });
     }
     it(`format unknown Node`, () => {
-      expect(formatXml({ nodeType: -2, nodeName: "foo"} as Node)).toBe("??foo");
-    })
+      expect(formatXml({ nodeType: -2, nodeName: 'foo' } as Node)).toBe('??foo');
+    });
   });
   describe('useWhitespaceInAutoClosingNode', () => {
     const xmlTests = [
@@ -48,7 +48,7 @@ describe('formatXml', () => {
     ];
     for (const test of xmlTests) {
       it(`use WhitespaceInAutoClosingNode with xml ${test.xml}`, async () => {
-        const document = domParser.parseFromString(test.xml);
+        const document = domParser.parseFromString(test.xml, 'text/xml');
         const formatOptions = { useWhitespaceInAutoClosingNode: true };
         expect(formatXml(document)).toBe(test.xml);
         expect(formatXml(document, formatOptions)).toBe(test.expected);
@@ -58,10 +58,12 @@ describe('formatXml', () => {
   describe('use indentation', () => {
     const xmlTests = [
       {
+        name: 'head',
         xml: `<head>test<br/>test</head>`,
         expected: `<head>test<br />test</head>`,
       },
       {
+        name: 'h1 style',
         xml: addHtmlBody('<h1 style="color: red">Hello World</h1><p>Lorem Ipsum<br/>Lorem ipsum</p>'),
         expected: addHtmlBody(
           `
@@ -71,14 +73,17 @@ describe('formatXml', () => {
         ),
       },
       {
+        name: 'comment style',
         xml: addHtmlBody('<!-- Test -->'),
         expected: addHtmlBody(`<!-- Test -->`, true),
       },
       {
+        name: 'html div',
         xml: addHtmlBody('<div><![CDATA[ test ]]></div>'),
         expected: addHtmlBody(`<div><![CDATA[ test ]]></div>`, true),
       },
       {
+        name: 'note test',
         xml: `<?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE note SYSTEM "Note.dtd">
         <?xml-stylesheet href="Namen.css" type="text/css"?>
@@ -100,8 +105,10 @@ describe('formatXml', () => {
 </note>`.trim(),
       },
       {
+        name: 'xml book',
         xml: `<?xml version="1.0" encoding="UTF-8"?>
-        <!DOCTYPE BOOK PUBLIC "-//Davenport//DTD DocBook V3.0//EN" SYSTEM>
+        <!DOCTYPE book PUBLIC "-//Norman Walsh//DTD DocBk XML V3.1.4//EN"
+                         "http://nwalsh.com/docbook/xml/3.1.4/db3xml.dtd">
         <?xml-stylesheet href="Namen.css" type="text/css"?>
         <note>
         <to>Tove</to>
@@ -111,7 +118,7 @@ describe('formatXml', () => {
         </note>`,
         expected: `
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE BOOK PUBLIC "-//Davenport//DTD DocBook V3.0//EN" SYSTEM>
+<!DOCTYPE book PUBLIC "-//Norman Walsh//DTD DocBk XML V3.1.4//EN" "http://nwalsh.com/docbook/xml/3.1.4/db3xml.dtd">
 <?xml-stylesheet href="Namen.css" type="text/css"?>
 <note>
   <to>Tove</to>
@@ -122,8 +129,8 @@ describe('formatXml', () => {
       },
     ];
     for (const test of xmlTests) {
-      it(`indentation with xml ${test.xml}`, async () => {
-        const document = domParser.parseFromString(test.xml);
+      it(`indentation with ${test.name || test.xml}`, async () => {
+        const document = domParser.parseFromString(test.xml, 'text/xml');
         const formatOptions: FormatOptions = {
           indentation: '  ',
           eol: EOL,

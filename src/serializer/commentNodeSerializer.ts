@@ -1,5 +1,6 @@
 import { NodeType, SerializerContext } from '../models';
 import { addIndentation } from '../utils';
+import { Node, Comment } from '@xmldom/xmldom';
 
 function isCommentNode(node: Node): node is Comment {
   return node.nodeType === NodeType.COMMENT_NODE;

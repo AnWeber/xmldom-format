@@ -1,5 +1,6 @@
 import { NodeType, SerializerContext } from '../models';
 import { addIndentation } from '../utils';
+import { Node, DocumentType } from '@xmldom/xmldom';
 
 export function serializeDocumentType(node: Node, context: SerializerContext): Array<string> | undefined {
   if (isDocumentType(node)) {

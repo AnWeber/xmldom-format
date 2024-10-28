@@ -1,5 +1,6 @@
 import { FormatOptions } from './formatOptions';
 import { Namespace } from './namespace';
+import { Node } from '@xmldom/xmldom';
 
 export type RequiredSerializerFunction = (node: Node, context: SerializerContext) => Array<string>;
 
